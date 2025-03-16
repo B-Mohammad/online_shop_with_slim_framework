@@ -8,6 +8,8 @@ use Slim\Factory\AppFactory;
 use Slim\Handlers\Strategies\RequestResponseArgs;
 use App\Middleware\GetProduct;
 use App\Controller\ProductIndex;
+use App\Middleware\GetCart;
+use App\Controller\CartIndex;
 use Slim\Routing\RouteCollectorProxy;
 
 define('APP_ROOT', dirname(__DIR__));
@@ -27,7 +29,7 @@ $collector->setDefaultInvocationStrategy(new RequestResponseArgs);
 
 $app->addBodyParsingMiddleware();
 
-$error_middleware = $app->addErrorMiddleware(false, true, true);
+$error_middleware = $app->addErrorMiddleware(true, true, true);
 $error_handler = $error_middleware->getDefaultErrorHandler();
 $error_handler->forceContentType("application/json");
 
@@ -39,6 +41,12 @@ $app->group('/api/products', function (RouteCollectorProxy $group) {
 
     $group->get("/{id:[0-9]+}", ProductIndex::class . ':OneProduct')
         ->add(GetProduct::class);
+});
+
+$app->group('/api/cart', function (RouteCollectorProxy $group) {
+
+    $group->get("/{user_id:[0-9]+}", CartIndex::class . ":getCart")
+        ->add(GetCart::class);
 });
 
 
