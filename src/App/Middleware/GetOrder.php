@@ -21,9 +21,8 @@ class GetOrder
 
     public function AllOrders(Request $req, RequestHandler $reqHandler): Response
     {
-        $context = RouteContext::fromRequest($req);
-        $route = $context->getRoute();
-        $userId = $route->getArgument("user_id");
+        $user = $req->getAttribute("user");
+        $userId = $user->user_id;
 
 
         $data = $this->orderR->getAll((int) $userId);
@@ -39,9 +38,11 @@ class GetOrder
 
     public function OrderDetail(Request $req, RequestHandler $reqHandler): Response
     {
+        $user = $req->getAttribute("user");
+        $userId = $user->user_id;
+
         $context = RouteContext::fromRequest($req);
         $route = $context->getRoute();
-        $userId = $route->getArgument("user_id");
         $cartId = $route->getArgument("cart_id");
 
 

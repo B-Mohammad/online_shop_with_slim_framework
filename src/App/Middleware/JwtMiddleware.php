@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
-use DateTime;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -16,7 +15,7 @@ class JwtMiddleware
 {
     function __construct(private ResponseFactory $factory) {}
 
-    public function __invoke(Request $req, RequestHandler $reqHandler): Response
+    public function __invoke(Request $req, RequestHandler $reqHandler,): Response
     {
         if (!$req->hasHeader("Authorization")) {
 
@@ -43,7 +42,7 @@ class JwtMiddleware
                 return $res->withStatus(401);
             }
 
-            $req->withAttribute('user', $decoded);
+            $req = $req->withAttribute('user', $decoded);
         } catch (\Throwable $th) {
 
             $res = $this->factory->createResponse();
@@ -51,8 +50,6 @@ class JwtMiddleware
             return $res->withStatus(401);
         }
 
-        $res = $reqHandler->handle($req);
-
-        return $res;
+        return $reqHandler->handle($req);
     }
 }

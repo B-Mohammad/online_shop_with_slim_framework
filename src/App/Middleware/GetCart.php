@@ -8,7 +8,6 @@ use App\Repo\CartRepo;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Slim\Routing\RouteContext;
 use Slim\Exception\HttpNotFoundException;
 
 class GetCart
@@ -17,9 +16,9 @@ class GetCart
 
     public function __invoke(Request $req, RequestHandler $reqHandler): Response
     {
-        $context = RouteContext::fromRequest($req);
-        $route = $context->getRoute();
-        $user_id = $route->getArgument("user_id");
+
+        $user = $req->getAttribute("user");
+        $user_id = $user->user_id;
 
         $data = $this->cartR->getCart((int) $user_id);
 
