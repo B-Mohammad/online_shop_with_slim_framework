@@ -42,4 +42,25 @@ class CartRepo
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getCartById(int $cartId): array
+    {
+
+        $pdo = $this->db->getConn();
+
+        $sql = "SELECT 
+                    products.name, 
+                    products.price, 
+                    cart_items.quantity
+                FROM cart_items
+                JOIN products ON cart_items.product_id = products.id
+                WHERE cart_items.cart_id = :cart_id ;";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(":cart_id", $cartId, PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

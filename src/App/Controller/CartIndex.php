@@ -12,27 +12,7 @@ class CartIndex
 {
     public function __construct(private CartRepo $cartR) {}
 
-    // public function __invoke(Request $req, Response $res): Response
-    // {
-
-    //     $data = $this->productR->getAll();
-
-    //     $body = json_encode($data);
-    //     $res->getBody()->write($body);
-    //     return $res;
-    // }
-
-    // public function AllProducts(Request $req, Response $res): Response
-    // {
-
-    //     $data = $this->productR->getAll();
-
-    //     $body = json_encode($data);
-    //     $res->getBody()->write($body);
-    //     return $res;
-    // }
-
-    public function getCart(Request $req, Response $res, string $id): Response
+    public function getCart(Request $req, Response $res): Response
     {
 
         $data = $req->getAttribute("cart");

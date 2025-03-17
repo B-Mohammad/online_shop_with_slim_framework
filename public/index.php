@@ -10,6 +10,8 @@ use App\Middleware\GetProduct;
 use App\Controller\ProductIndex;
 use App\Middleware\GetCart;
 use App\Controller\CartIndex;
+use App\Controller\OrderIndex;
+use App\Middleware\GetOrder;
 use Slim\Routing\RouteCollectorProxy;
 
 define('APP_ROOT', dirname(__DIR__));
@@ -49,6 +51,13 @@ $app->group('/api/cart', function (RouteCollectorProxy $group) {
         ->add(GetCart::class);
 });
 
+$app->group('/api/orders', function (RouteCollectorProxy $group) {
 
+    $group->get("/{user_id:[0-9]+}", OrderIndex::class . ":AllOrders")->add(GetOrder::class . ":AllOrders");
+
+
+    $group->get("/{user_id:[0-9]+}/{cart_id:[0-9]+}", OrderIndex::class . ":OneOrder")
+        ->add(GetOrder::class . ":OrderDetail");
+});
 
 $app->run();
