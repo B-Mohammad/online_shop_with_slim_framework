@@ -24,9 +24,17 @@ $app->group('/api/cart', function (RouteCollectorProxy $group) {
 
     $group->get("", CartIndex::class . ":getCart")
         ->add(GetCart::class);
+
+    $group->post("", CartIndex::class . ":addToCart");
+
+    $group->delete("/{product_id:[0-9]+}", CartIndex::class . ":deleteFromCart");
+
+    $group->put("/{product_id:[0-9]+}", CartIndex::class . ":editCart");
 })->add(JwtMiddleware::class);
 
 $app->group('/api/orders', function (RouteCollectorProxy $group) {
+
+    $group->post("", OrderIndex::class . ":submitOrder");
 
     $group->get("", OrderIndex::class . ":AllOrders")
         ->add(GetOrder::class . ":AllOrders");
