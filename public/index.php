@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Controller\AuthEndPoint;
 use App\Middleware\AddJsonResponseHeader;
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
@@ -12,6 +13,7 @@ use App\Middleware\GetCart;
 use App\Controller\CartIndex;
 use App\Controller\OrderIndex;
 use App\Middleware\GetOrder;
+use App\Middleware\JwtMiddleware;
 use Slim\Routing\RouteCollectorProxy;
 
 define('APP_ROOT', dirname(__DIR__));
@@ -58,6 +60,11 @@ $app->group('/api/orders', function (RouteCollectorProxy $group) {
 
     $group->get("/{user_id:[0-9]+}/{cart_id:[0-9]+}", OrderIndex::class . ":OneOrder")
         ->add(GetOrder::class . ":OrderDetail");
+})->add(JwtMiddleware::class);
+
+$app->group('/api/auth', function (RouteCollectorProxy $group) {
+
+    $group->post("", AuthEndPoint::class);
 });
 
 $app->run();
