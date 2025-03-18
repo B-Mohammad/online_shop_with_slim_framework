@@ -156,4 +156,56 @@ class CartRepo
         $stmt->execute();
         return $stmt->rowCount();
     }
+
+    public function editCart(int $userId, int $product_id, int $quantity): int|bool
+    {
+
+        $pdo = $this->db->getConn();
+
+        $sql5 = "SELECT * FROM products WHERE id = :product_id";
+
+        $stmt = $pdo->prepare($sql5);
+        $stmt->bindValue(":product_id", $product_id, PDO::PARAM_INT);
+
+        $stmt->execute();
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($res === false) {
+            return false;
+        }
+
+
+        $sql = "SELECT id FROM cart WHERE user_id = :user_id AND is_active = TRUE";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(":user_id", $userId, PDO::PARAM_INT);
+
+        $stmt->execute();
+        $res2 = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($res2 === false) {
+            return false;
+        }
+
+        $sql3 = "SELECT * FROM cart_items WHERE cart_id = :cart_id AND product_id = :product_id";
+        $stmt = $pdo->prepare($sql3);
+        $stmt->bindValue(":cart_id", $res2['id'], PDO::PARAM_INT);
+        $stmt->bindValue(":product_id", $product_id, PDO::PARAM_INT);
+
+        $stmt->execute();
+        $res3 = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($res3 === false || $res3["quantity"]  + $quantity < 0 || $res3["quantity"] + $quantity > $res["quantity"]) {
+            return false;
+        }
+
+        $temp = "UPDATE cart_items SET cart_items.quantity = :quantity WHERE cart_items.product_id = :product_id AND cart_items.cart_id = :cart_id;";
+        $stmts = $pdo->prepare($temp);
+
+        $stmts->bindValue(":cart_id", $res2["id"], PDO::PARAM_INT);
+        $stmts->bindValue(":product_id", $product_id, PDO::PARAM_INT);
+        $stmts->bindValue(":quantity", $res3["quantity"] + $quantity, PDO::PARAM_INT);
+        $stmts->execute();
+
+        return $stmts->rowCount();
+    }
 }

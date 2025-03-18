@@ -103,4 +103,49 @@ class CartIndex
 
         return $res;
     }
+
+    public function editCart(Request $req, Response $res): Response
+    {
+        $user = $req->getAttribute("user");
+        $user_id = $user->user_id;
+
+        $body = $req->getParsedBody();
+
+        $context = RouteContext::fromRequest($req);
+        $route = $context->getRoute();
+        $product_id = (int) $route->getArgument("product_id");
+
+        $this->validator->mapFieldsRules([
+            "product_id" => ['required', 'integer',],
+            'quantity' => ['required', 'integer',]
+        ]);
+
+        $body['product_id'] = $product_id;
+        $this->validator = $this->validator->withData($body);
+
+        if (!$this->validator->validate()) {
+            $res->getBody()->write(json_encode($this->validator->errors()));
+            return $res->withStatus(422);
+        }
+
+        $quantity = $body["quantity"];
+
+        $data = $this->cartR->editCart($user_id, (int)$product_id, (int)$quantity);
+
+        if ($data === false || $data === 0) {
+            $temp = json_encode([
+                "message" => " item not updated",
+            ]);
+            $res = $res->withStatus(404);
+        } else {
+            $temp = json_encode([
+                "message" => " item updated",
+                "rows" => $data
+            ]);
+            $res = $res->withStatus(201);
+        }
+        $res->getBody()->write($temp);
+
+        return $res;
+    }
 }
